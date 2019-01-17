@@ -52,7 +52,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { \
    * |------+------+------+------+------+------|             |------+------+------+------+------+------|
    * | Shift|   Z  |   X  |   C  |   V  |   B  |             |   N  |   M  |   ,  |   .  |   /  |Enter |
    * |------+------+------+------+------+------|             |------+------+------+------+------+------|
-   * | Esc  |ADJUST| Win  | Alt  |LOWER |Space |             | Space| RAISE| Left | Down |  Up  | Right|
+   * | Esc  |ADJUST| GUI  | Alt  |LOWER |Space |             | Space| RAISE| Left | Down |  Up  | Right|
    * `-----------------------------------------'             `-----------------------------------------'
    */
 [_QWERTY] = LAYOUT_ortho_4x12(
