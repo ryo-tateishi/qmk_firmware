@@ -42,3 +42,12 @@
   }
 
 #define LAYOUT_ortho_4x12 LAYOUT
+
+#define LED_CUSTOM_LAYOUT
+static const uint8_t led_layout[] =
+  {
+    0,1,2,3,4,5,
+    11,10,9,8,7,6,
+    12,13,14,15,16,17,
+    23,22,21,20,19,18
+  };
