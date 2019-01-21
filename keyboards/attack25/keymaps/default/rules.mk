@@ -35,7 +35,7 @@ Link_Time_Optimization = no # if firmware size over limit, try this option
 ####    Do not enable these with audio at the same time.
 
 ### Attack25 keyboard 'default' keymap: convenient command line option
-##    make ATTACK25=<options> zinc:defualt
+##    make ATTACK25=<options> attack25:defualt
 ##    option= back | under | na | ios
 ##    ex.
 ##      make ATTACK25=under    attack25:defualt
