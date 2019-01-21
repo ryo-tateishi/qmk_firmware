@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include <drivers/avr/pro_micro.h>
 
 #ifdef RGBLIGHT_ENABLE
 //Following line allows macro to read current RGB settings
@@ -54,10 +55,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 bool RGB_momentary_on;
 
 void matrix_init_user(void) {
-	#ifdef RGBLIGHT_ENABLE
-	  rgblight_init();
-	  RGB_current_config = rgblight_config;
+    #ifdef RGBLIGHT_ENABLE
+	    rgblight_init();
+      RGB_current_config = rgblight_config;
     #endif
+    TX_RX_LED_INIT; //Turn LEDs off by default
+    RXLED0;
+    TXLED0;
 }
 
 void matrix_scan_user(void) {
