@@ -6,7 +6,7 @@ A 5x5 key pad project.
 
 Keyboard Maintainer: [monksoffunk](https://github.com/monksoffunk)  
 Hardware Supported: Attack25 PCB  
-Hardware Availability: http://www.sho-k.co.uk/tech/590.html
+Hardware Availability: https://25keys.booth.pm/ and http://www.sho-k.co.uk/tech/590.html
 
 Make example for this keyboard (after setting up your build environment):
 
