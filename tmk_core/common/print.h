@@ -29,7 +29,11 @@
 #include <stdbool.h>
 #include "util.h"
 
+<<<<<<< HEAD
 #if defined(PROTOCOL_CHIBIOS) || defined(PROTOCOL_ARM_ATSAM)
+=======
+#if defined(PROTOCOL_CHIBIOS) || defined(PROTOCOL_NRF)
+>>>>>>> e0bdb2b430cb33d47ab3e5298345cf820eee1602
 #define PSTR(x) x
 #endif
 
@@ -99,9 +103,16 @@ void print_set_sendchar(int8_t (*print_sendchar_func)(uint8_t));
 
 #  endif /* USER_PRINT / NORMAL PRINT */
 
+<<<<<<< HEAD
 #elif defined(PROTOCOL_ARM_ATSAM) /* PROTOCOL_ARM_ATSAM */
 
 #  include "arm_atsam/printf.h"
+=======
+#elif defined(PROTOCOL_NRF)
+
+#  include "nrf/printf.h"
+#  include "nrf_log.h"
+>>>>>>> e0bdb2b430cb33d47ab3e5298345cf820eee1602
 
 #  ifdef USER_PRINT /* USER_PRINT */
 
@@ -111,19 +122,34 @@ void print_set_sendchar(int8_t (*print_sendchar_func)(uint8_t));
 #    define xprintf(fmt, ...)
 
 // Create user print defines
+<<<<<<< HEAD
 #    define uprintf(fmt, ...)  __xprintf(fmt, ##__VA_ARGS__)
 #    define uprint(s)          xprintf(s)
 #    define uprintln(s)        xprintf(s "\r\n")
+=======
+#    define uprint(s)    tfp_printf(s)
+#    define uprintln(s)  tfp_printf(s "\r\n")
+#    define uprintf      tfp_printf
+>>>>>>> e0bdb2b430cb33d47ab3e5298345cf820eee1602
 
 #  else /* NORMAL PRINT */
 
 // Create user & normal print defines
+<<<<<<< HEAD
 #    define xprintf(fmt, ...)  __xprintf(fmt, ##__VA_ARGS__)
 #    define print(s)           xprintf(s)
 #    define println(s)         xprintf(s "\r\n")
 #    define uprint(s)          print(s)
 #    define uprintln(s)        println(s)
 #    define uprintf(fmt, ...)  xprintf(fmt, ...)
+=======
+#    define print(s)     NRF_LOG_INFO(s)
+#    define println(s)   NRF_LOG_INFO(s "\r\n")
+#    define xprintf      NRF_LOG_INFO
+#    define uprint(s)    NRF_LOG_INFO(s)
+#    define uprintln(s)  NRF_LOG_INFO(s "\r\n")
+#    define uprintf      NRF_LOG_INFO
+>>>>>>> e0bdb2b430cb33d47ab3e5298345cf820eee1602
 
 #  endif /* USER_PRINT / NORMAL PRINT */
 

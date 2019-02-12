@@ -30,6 +30,7 @@
 #define RGBLIGHT_LIMIT_VAL 255
 #endif
 
+<<<<<<< HEAD
 #define _RGBM_SINGLE_STATIC(sym)   RGBLIGHT_MODE_ ## sym,
 #define _RGBM_SINGLE_DYNAMIC(sym)
 #define _RGBM_MULTI_STATIC(sym)    RGBLIGHT_MODE_ ## sym,
@@ -44,8 +45,14 @@ static inline int is_static_effect(uint8_t mode) {
     return memchr(static_effect_table, mode, sizeof(static_effect_table)) != NULL;
 }
 
+=======
+#ifndef MIN
+>>>>>>> e0bdb2b430cb33d47ab3e5298345cf820eee1602
 #define MIN(a,b) (((a)<(b))?(a):(b))
+#endif
+#ifndef MAX
 #define MAX(a,b) (((a)>(b))?(a):(b))
+#endif
 
 #ifdef RGBLIGHT_EFFECT_STATIC_GRADIENT
 __attribute__ ((weak))
@@ -318,8 +325,13 @@ void rgblight_disable_noeeprom(void) {
   xprintf("rgblight disable [noEEPROM]: rgblight_config.enable = %u\n", rgblight_config.enable);
 #ifdef RGBLIGHT_USE_TIMER
     rgblight_timer_disable();
+<<<<<<< HEAD
 #endif
   _delay_ms(50);
+=======
+  #endif
+  wait_ms(50);
+>>>>>>> e0bdb2b430cb33d47ab3e5298345cf820eee1602
   rgblight_set();
 }
 
