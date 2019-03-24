@@ -1,11 +1,9 @@
 /*
- * pro_v1.c
+ * master.c
  *
- *  Created on: 2018/11/02
- *      Author: Sekigon
+ *  Created on: 2019/03/18
+ *      Author: sekigon
  */
-
-
 
 #include "matrix.h"
 #include "quantum.h"
@@ -14,5 +12,4 @@
 
 void matrix_init_user() {
   set_usb_enabled(true);
-  debug_enable = true;
 }

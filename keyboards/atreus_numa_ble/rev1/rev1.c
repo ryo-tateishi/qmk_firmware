@@ -1,5 +1,5 @@
 /*
- * pro_v1.c
+ * rev1.c
  *
  *  Created on: 2018/11/02
  *      Author: Sekigon
@@ -14,5 +14,4 @@
 
 void matrix_init_user() {
   set_usb_enabled(true);
-  debug_enable = true;
 }

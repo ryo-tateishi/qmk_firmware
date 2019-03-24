@@ -1,8 +1,8 @@
 /*
- * pro_v1.c
+ * blockey_ble.c
  *
- *  Created on: 2018/11/02
- *      Author: Sekigon
+ *  Created on: 2019/02/18
+ *      Author: Gachiham
  */
 
 
@@ -14,5 +14,4 @@
 
 void matrix_init_user() {
   set_usb_enabled(true);
-  debug_enable = true;
 }
