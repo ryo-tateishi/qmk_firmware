@@ -1,8 +1,8 @@
 # cassette42
 
-![cassette42](imgur.com image replace me!)
+![cassette42](https://pbs.twimg.com/media/D63q5S0UcAE9Rfj?format=jpg&name=large)
 
-A short description of the keyboard/project
+An audio control pad with 4 switches and 2 rotary encoders.
 
 Keyboard Maintainer: [monksoffunk](https://github.com/monksoffunk)  [@monksoffunkJP](https://twitter.com/monksoffunkJP)   
 Hardware Supported: Cassette 42 PCB  
