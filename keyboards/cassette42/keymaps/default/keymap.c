@@ -47,7 +47,7 @@ enum layer_number {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_AUDIO] = LAYOUT(
                  KC_MUTE, KC_ENT,
-        LT(_HUE, KC_MPRV), LT(_SAT, KC_MPLY), LT(_VAL, KC_MNXT), LT(_MODE, RGB_MOD)),
+        LT(_HUE, KC_MPRV), LT(_SAT, KC_MPLY), LT(_VAL, KC_MNXT), LT(_MODE, KC_SPC)),
     [_HUE] = LAYOUT(
                  RGB_TOG, RGBRST,
         _______, _______, RGB_HUD, RGB_HUI),
