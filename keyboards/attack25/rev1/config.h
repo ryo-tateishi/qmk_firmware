@@ -14,7 +14,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-#pragma once 
+#pragma once
 #include "config_common.h"
 
 /* USB Device descriptor parameter */
@@ -60,13 +60,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* prevent stuck modifiers */
 #define PREVENT_STUCK_MODIFIERS
 
-#ifdef RGBLED_BACK
-  #define RGBLED_NUM 25
+#ifdef RGBLED_BOTH
+  #define RGBLED_NUM 30
 #else
-  #ifdef RGBLED_1LED
-    #define RGBLED_NUM 1
+  #ifdef RGBLED_BACK
+    #define RGBLED_NUM 25
   #else
-    #define RGBLED_NUM 5
+    #ifdef RGBLED_1LED
+      #define RGBLED_NUM 1
+    #else
+      #define RGBLED_NUM 5
+    #endif
   #endif
 #endif
 

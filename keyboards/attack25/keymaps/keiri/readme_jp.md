@@ -1,4 +1,4 @@
-﻿# The Default Attack25 Layout
+﻿# The keiri Attack25 Layout
 ## 配列
 
 ### Default Layer
@@ -7,13 +7,13 @@
  ,-----------------------------.             
  |NumLk|  /  |  *  |  -  | Esc |             
  |-----+-----+-----+-----+-----|
- |  7  |  8  |  9  |  +  |ScrLk|  ScrLk momentary on...FN Layer
+ |  7  |  8  |  9  |     |S.Tab|
+ |-----+-----+-----|  +  |-----|
+ |  4  |  5  |  6  |     | Tab |  Tab momentary on...RGB Layer
  |-----+-----+-----+-----+-----|
- |  4  |  5  |  6  |BkTab|PrtSc|  PrtSc momentary on...RGB Layer
- |-----+-----+-----+-----+-----|
- |  1  |  2  |  3  | Tab | Del |
- |-----+-----+-----+-----+-----|
- |  0  | 00  |  .  |Enter|BkSpc|
+ |  1  |  2  |  3  |     | Del |  Del momentary on...FN Layer
+ |-----+-----+-----| Ent |-----|
+ |  0  | 00  |  .  |     |BkSpc|
  `------------------------------
 ```
 

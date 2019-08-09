@@ -82,7 +82,7 @@ $ make attack25:default:clean
 ```
 ### Attack25 keyboard 'default' keymap: convenient command line option
 ##    make ATTACK25=<options> attack25:defualt
-##    option= back | under | 1led | na | ios
+##    option= back | under | both | 1led | na | ios
 ##    ex.
 ##      make ATTACK25=under    attack25:defualt
 ##      make ATTACK25=under,ios attack25:defualt
@@ -99,6 +99,7 @@ $ make attack25:default:clean
 
 back...バックライトLEDを有効にする場合（キーキャップ側を照らす25個のLEDを実装した場合）
 under...アンダーグロウLEDを有効にする場合（底面側を照らす5個のLEDを実装した場合）
+both...バックライトLED25個の後にアンダーグロウLED5個を接続した場合
 1led...SW1の部分にのみ実装したLEDを有効にする場合（LEDの実装はバックライト、アンダーグロウのどちらでもかまいませんが、バックライトの方がメンテナンスが容易）
 na...RGBのアニメーションをオフにする場合
 ios...iPad/iPhoneなどのiOS機器に接続する場合（消費電力を制限します）

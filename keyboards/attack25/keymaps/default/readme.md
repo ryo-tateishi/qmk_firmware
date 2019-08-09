@@ -1,5 +1,5 @@
 ﻿# The Default Attack25 Layout
-## 配列
+## Layout
 
 ### Default Layer
 
@@ -50,34 +50,27 @@
 ```
 
 
-## コンパイルの仕方
-
-コンパイルは、qmk_firmware のトップディレクトリで行います。
+## How to compile
 
 ```
 $ cd qmk_firmware
-```
-qmk_firmwareでは各キーボードのコンパイルは、`<キーボード名>:<キーマップ名>`という指定で行います。
-
-```
 $ make attack25:default
 ```
 
-キーボードへの書き込みまで同時に行うには下記のように`:avrdude`を付けます。
+If you want upload the firmware to the keyboard after its compilation.
 
 ```
 $ make attack25:default:avrdude
 ```
 
-コンパイル結果と中間生成物を消去したい場合は以下のようにします。
+you can clean the build output folders to make sure that everything is built from scratch. Run this before normal compilation if you have some unexplainable problems.
 
 ```
 $ make attack25:default:clean
 ```
 
-## カスタマイズ
+## Customize
 
-コマンドラインからオプションを指定してビルドすることが出来ます。
 
 ```
 ### Attack25 keyboard 'default' keymap: convenient command line option
@@ -93,21 +86,11 @@ $ make attack25:default:clean
 
 ```
 
-## カスタマイズに使用できるオプションについて
+back...Enable backlight RGB LED
+under...Enable underglow RGB LED
+both...Enable backlight RGB LED and underglow RGB LED
+1led...Enable RGB LED at SW1
+na...Disable RGB animation
+ios...for iPad/iPhone
 
 ```
-
-back...バックライトLEDを有効にする場合（キーキャップ側を照らす25個のLEDを実装した場合）
-under...アンダーグロウLEDを有効にする場合（底面側を照らす5個のLEDを実装した場合）
-both...バックライトLED25個の後にアンダーグロウLED5個を接続した場合
-1led...SW1の部分にのみ実装したLEDを有効にする場合（LEDの実装はバックライト、アンダーグロウのどちらでもかまいませんが、バックライトの方がメンテナンスが容易）
-na...RGBのアニメーションをオフにする場合
-ios...iPad/iPhoneなどのiOS機器に接続する場合（消費電力を制限します）
-
-```
-
-## カスタマイズを使用したビルドコマンド例
-
-make ATTACK25=back attack25:default
-バックライトLEDを有効にするオプションを付与してdefaultキーマップのファームをビルドします
-

@@ -21,6 +21,7 @@ define ATTACK25_CUSTOMISE_MSG
   $(info Attack25 customize)
   $(info -  LED_BACK_ENABLE=$(LED_BACK_ENABLE))
   $(info -  LED_UNDERGLOW_ENABLE=$(LED_UNDERGLOW_ENABLE))
+  $(info -  LED_BOTH_ENABLE=$(LED_BOTH_ENABLE))
   $(info -  LED_1LED_ENABLE=$(LED_1LED_ENABLE))
   $(info -  LED_ANIMATION=$(LED_ANIMATIONS))
   $(info -  IOS_DEVICE_ENABLE=$(IOS_DEVICE_ENABLE))
@@ -29,6 +30,7 @@ endef
 # Attack25 keyboard customize
 LED_BACK_ENABLE = no        # LED backlight (Enable WS2812 RGB backlight)
 LED_UNDERGLOW_ENABLE = no   # LED underglow (Enable WS2812 RGB underlight)
+LED_BOTH_ENABLE = no        # LED backlight and underglow
 LED_1LED_ENABLE = no        # LED 1LED (Enable WS2812 RGB light)
 LED_ANIMATIONS = yes        # LED animations
 IOS_DEVICE_ENABLE = no      # connect to IOS device (iPad,iPhone)
@@ -38,7 +40,7 @@ Link_Time_Optimization = no # if firmware size over limit, try this option
 
 ### Attack25 keyboard 'default' keymap: convenient command line option
 ##    make ATTACK25=<options> attack25:defualt
-##    option= back | under | 1led | na | ios
+##    option= back | under | both | 1led | na | ios
 ##    ex.
 ##      make ATTACK25=under    attack25:defualt
 ##      make ATTACK25=under,ios attack25:defualt
@@ -54,6 +56,9 @@ ifneq ($(strip $(ATTACK25)),)
   endif
   ifeq ($(findstring under,$(ATTACK25)), under)
     LED_UNDERGLOW_ENABLE = yes
+  endif
+  ifeq ($(findstring both,$(ATTACK25)), both)
+    LED_BOTH_ENABLE = yes
   endif
   ifeq ($(findstring 1led,$(ATTACK25)), 1led)
     LED_1LED_ENABLE = yes
@@ -72,12 +77,15 @@ ifeq ($(strip $(LED_BACK_ENABLE)), yes)
   RGBLIGHT_ENABLE = yes
   OPT_DEFS += -DRGBLED_BACK
   ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
-    $(eval $(call ATTACK25_CUSTOMISE_MSG))
-    $(error LED_BACK_ENABLE and LED_UNDERGLOW_ENABLE both 'yes')
+     OPT_DEFS += -DRGBLED_BOTH
+    $(info both LED_BACK_ENABLE and LED_UNDERGLOW_ENABLE)
   endif
 else ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
     RGBLIGHT_ENABLE = yes
-        else ifeq ($(strip $(LED_1LED_ENABLE)), yes)
+else ifeq ($(strip $(LED_BOTH_ENABLE)), yes)
+    RGBLIGHT_ENABLE = yes
+    OPT_DEFS += -DRGBLED_BOTH
+else ifeq ($(strip $(LED_1LED_ENABLE)), yes)
     RGBLIGHT_ENABLE = yes
     OPT_DEFS += -DRGBLED_1LED
 else
