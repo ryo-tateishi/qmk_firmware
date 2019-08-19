@@ -18,11 +18,7 @@ enum layer_number
 
 enum custom_keycodes
 {
-  NUM = SAFE_RANGE,
-  NUMOFF,
-  FN,
-  RGB,
-  RGB_MODF,
+  RGB_MODF = SAFE_RANGE,
   RGB_MODR,
   RGBHINC,
   RGBHDEC,
@@ -296,7 +292,7 @@ void led_set_user(uint8_t usb_led)
   {
     MAC_mode = macos_check();
     macos_checked = true;
-  } 
+  }
 
 #ifdef RGBLIGHT_ENABLE
   if (!RGB_momentary_on && !MAC_mode)
