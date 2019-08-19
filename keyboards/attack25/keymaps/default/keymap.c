@@ -10,14 +10,12 @@
 enum layer_number {
   _NUM = 0,
   _FN,
-  _RGB
+  _RGB,
+  _BLED
 };
 
 enum custom_keycodes {
-  NUM = SAFE_RANGE,
-  FN,
-  RGB,
-  RGB_MODF,
+  RGB_MODF = SAFE_RANGE,
   RGB_MODR,
   RGBHINC,
   RGBHDEC,
@@ -34,7 +32,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	KC_NLCK, KC_PSLS, KC_PAST, KC_PMNS, KC_ESC, \
 	KC_P7, KC_P8, KC_P9, KC_PPLS, LT(_FN, KC_SLCK), \
 	KC_P4, KC_P5, KC_P6, S(KC_TAB), LT(_RGB, KC_PSCR), \
-	KC_P1, KC_P2, KC_P3, KC_TAB, KC_DEL, \
+	KC_P1, KC_P2, KC_P3, KC_TAB, LT(_BLED, KC_DEL), \
 	KC_P0, P00, KC_PDOT, KC_PENT, KC_BSPC),\
 
 [_FN] = LAYOUT_ortho_5x5( \
@@ -49,7 +47,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   RGBRST,  RGB_MODR, RGBHDEC, RGBSDEC, RGBVDEC, \
 	RGB_MODE_PLAIN, RGB_MODE_BREATHE, RGB_MODE_RAINBOW, XXXXXXX, XXXXXXX, \
 	RGB_MODE_SWIRL, RGB_MODE_SNAKE, RGB_MODE_KNIGHT, XXXXXXX, XXXXXXX, \
-	KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS) \
+	KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS), \
+
+  [_BLED] = LAYOUT_ortho_5x5(
+    BL_TOGG, BL_ON, BL_INC, BL_STEP, XXXXXXX,
+    BL_BRTG, BL_OFF, BL_DEC, XXXXXXX, XXXXXXX,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX)
 };
 
 bool RGB_momentary_on;
@@ -171,7 +176,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	case P00:
 	  if (record->event.pressed) {
 	     SEND_STRING("00");
-	  }  
+	  }
 	  return false;
 	  break;
 	default:
@@ -180,7 +185,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
- 
+
 uint32_t layer_state_set_user(uint32_t state) {
   #ifdef RGBLIGHT_ENABLE
 	  switch (biton32(state)) {
@@ -199,43 +204,43 @@ uint32_t layer_state_set_user(uint32_t state) {
 	  }
 	#endif
 	return state;
-} 
+}
 
 void led_set_user(uint8_t usb_led) {
 	#ifdef RGBLIGHT_ENABLE
     if (!RGB_momentary_on) {
 	    if (usb_led & (1 << USB_LED_NUM_LOCK)) {
-	      rgblight_sethsv_noeeprom(RGB_current_config.hue, RGB_current_config.sat, RGB_current_config.val); 
+	      rgblight_sethsv_noeeprom(RGB_current_config.hue, RGB_current_config.sat, RGB_current_config.val);
 			  rgblight_mode_noeeprom(RGB_current_config.mode);
 	    } else {
-		    rgblight_sethsv_noeeprom_azure();	
+		    rgblight_sethsv_noeeprom_azure();
         rgblight_mode_noeeprom(1);
 	    }
 	  }
 	#endif
 
 	if (usb_led & (1 << USB_LED_CAPS_LOCK)) {
-		
+
   } else {
-		
+
 	}
 
 	if (usb_led & (1 << USB_LED_SCROLL_LOCK)) {
-		
+
 	} else {
-		
+
 	}
 
 	if (usb_led & (1 << USB_LED_COMPOSE)) {
-		
+
 	} else {
-		
+
 	}
 
 	if (usb_led & (1 << USB_LED_KANA)) {
-		
+
 	} else {
-		
+
 	}
 
 }

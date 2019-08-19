@@ -18,13 +18,13 @@ RGBLIGHT_ENABLE = no        # Enable WS2812 RGB underlight.  Do not enable this 
 SWAP_HANDS_ENABLE = no        # Enable one-hand typing
 
 define ATTACK25_CUSTOMISE_MSG
-  $(info Attack25 customize)
-  $(info -  LED_BACK_ENABLE=$(LED_BACK_ENABLE))
-  $(info -  LED_UNDERGLOW_ENABLE=$(LED_UNDERGLOW_ENABLE))
-  $(info -  LED_BOTH_ENABLE=$(LED_BOTH_ENABLE))
-  $(info -  LED_1LED_ENABLE=$(LED_1LED_ENABLE))
-  $(info -  LED_ANIMATION=$(LED_ANIMATIONS))
-  $(info -  IOS_DEVICE_ENABLE=$(IOS_DEVICE_ENABLE))
+  	$(info Attack25 customize)
+  	$(info -  LED_BACK_ENABLE=$(LED_BACK_ENABLE))
+  	$(info -  LED_UNDERGLOW_ENABLE=$(LED_UNDERGLOW_ENABLE))
+  	$(info -  LED_BOTH_ENABLE=$(LED_BOTH_ENABLE))
+  	$(info -  LED_1LED_ENABLE=$(LED_1LED_ENABLE))
+  	$(info -  LED_ANIMATION=$(LED_ANIMATIONS))
+  	$(info -  IOS_DEVICE_ENABLE=$(IOS_DEVICE_ENABLE))
 endef
 
 # Attack25 keyboard customize
@@ -51,35 +51,35 @@ Link_Time_Optimization = no # if firmware size over limit, try this option
 
 
 ifneq ($(strip $(ATTACK25)),)
-  ifeq ($(findstring back,$(ATTACK25)), back)
-    LED_BACK_ENABLE =  yes
-  endif
-  ifeq ($(findstring under,$(ATTACK25)), under)
-    LED_UNDERGLOW_ENABLE = yes
-  endif
-  ifeq ($(findstring both,$(ATTACK25)), both)
-    LED_BOTH_ENABLE = yes
-  endif
-  ifeq ($(findstring 1led,$(ATTACK25)), 1led)
-    LED_1LED_ENABLE = yes
-  endif
-  ifeq ($(findstring na,$(ATTACK25)), na)
-    LED_ANIMATIONS = no
-  endif
-  ifeq ($(findstring ios,$(ATTACK25)), ios)
-    IOS_DEVICE_ENABLE = yes
-  endif
-  $(eval $(call ATTACK25_CUSTOMISE_MSG))
-  $(info )
+  	ifeq ($(findstring back,$(ATTACK25)), back)
+    	LED_BACK_ENABLE =  yes
+  	endif
+  	ifeq ($(findstring under,$(ATTACK25)), under)
+    	LED_UNDERGLOW_ENABLE = yes
+  	endif
+  	ifeq ($(findstring both,$(ATTACK25)), both)
+    	LED_BOTH_ENABLE = yes
+  	endif
+  	ifeq ($(findstring 1led,$(ATTACK25)), 1led)
+    	LED_1LED_ENABLE = yes
+  	endif
+  	ifeq ($(findstring na,$(ATTACK25)), na)
+    	LED_ANIMATIONS = no
+  	endif
+  	ifeq ($(findstring ios,$(ATTACK25)), ios)
+    	IOS_DEVICE_ENABLE = yes
+  	endif
+  	$(eval $(call ATTACK25_CUSTOMISE_MSG))
+  	$(info )
 endif
 
 ifeq ($(strip $(LED_BACK_ENABLE)), yes)
-  RGBLIGHT_ENABLE = yes
-  OPT_DEFS += -DRGBLED_BACK
-  ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
-     OPT_DEFS += -DRGBLED_BOTH
-    $(info both LED_BACK_ENABLE and LED_UNDERGLOW_ENABLE)
-  endif
+  	RGBLIGHT_ENABLE = yes
+  	OPT_DEFS += -DRGBLED_BACK
+  	ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
+     	OPT_DEFS += -DRGBLED_BOTH
+    	$(info both LED_BACK_ENABLE and LED_UNDERGLOW_ENABLE)
+  	endif
 else ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
     RGBLIGHT_ENABLE = yes
 else ifeq ($(strip $(LED_BOTH_ENABLE)), yes)
@@ -89,7 +89,7 @@ else ifeq ($(strip $(LED_1LED_ENABLE)), yes)
     RGBLIGHT_ENABLE = yes
     OPT_DEFS += -DRGBLED_1LED
 else
-  RGBLIGHT_ENABLE = no
+  	RGBLIGHT_ENABLE = no
 endif
 
 ifeq ($(strip $(IOS_DEVICE_ENABLE)), yes)

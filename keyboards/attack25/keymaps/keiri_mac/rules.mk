@@ -67,15 +67,15 @@ ifneq ($(strip $(ATTACK25)),)
     	LED_ANIMATIONS = no
   	endif
   	ifeq ($(findstring ios,$(ATTACK25)), ios)
-    	IOS_DEVICE_ENABLE = yes
+		IOS_DEVICE_ENABLE = yes
   	endif
   	$(eval $(call ATTACK25_CUSTOMISE_MSG))
   	$(info )
 endif
 
 ifeq ($(strip $(LED_BACK_ENABLE)), yes)
-  	RGBLIGHT_ENABLE = yes
-  	OPT_DEFS += -DRGBLED_BACK
+    RGBLIGHT_ENABLE = yes
+    OPT_DEFS += -DRGBLED_BACK
   	ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
      	OPT_DEFS += -DRGBLED_BOTH
     	$(info both LED_BACK_ENABLE and LED_UNDERGLOW_ENABLE)
@@ -89,7 +89,7 @@ else ifeq ($(strip $(LED_1LED_ENABLE)), yes)
     RGBLIGHT_ENABLE = yes
     OPT_DEFS += -DRGBLED_1LED
 else
-  	RGBLIGHT_ENABLE = no
+    RGBLIGHT_ENABLE = no
 endif
 
 ifeq ($(strip $(IOS_DEVICE_ENABLE)), yes)
