@@ -68,46 +68,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* ws2812 RGB LED */
 #define RGB_DI_PIN D3
-#define RGBLIGHT_TIMER
-//#define RGBLED_NUM 12    // Number of LEDs. see ./keymaps/default/config.h
-#define ws2812_PORTREG  PORTD
-#define ws2812_DDRREG   DDRD
 
-// RGB LED support
-//#define RGBLIGHT_ANIMATIONS : see ./rules.mk: LED_ANIMATIONS = yes or no
-//    see ./rules.mk: LED_BACK_ENABLE or LED_UNDERGLOW_ENABLE set yes
-#ifdef RGBLED_BACK
-  #define RGBLED_NUM 24
-#else
-  #ifdef RGBLED_BOTH
-    #define RGBLED_NUM 30
-  #else
-    #define RGBLED_NUM 6
-  #endif
+#ifdef RGB_MATRIX_ENABLE
+    #define RGBLED_NUM 48
+    #define DRIVER_LED_TOTAL RGBLED_NUM
+#endif
+
+/* #ifdef RGBLIGHT_ENABLE
+    #ifdef RGBLED_BACK
+        #define RGBLED_NUM 24
+    #else
+        #ifdef RGBLED_BOTH
+            #define RGBLED_NUM 30
+        #else
+            #define RGBLED_NUM 6
+        #endif
+    #endif
 #endif
 
 #ifndef IOS_DEVICE_ENABLE
-  #if RGBLED_NUM <= 6
-    #define RGBLIGHT_LIMIT_VAL 255
-  #else
-    #if RGBLED_NUM <= 16
-      #define RGBLIGHT_LIMIT_VAL 130
+    #if RGBLED_NUM <= 6
+        #define RGBLIGHT_LIMIT_VAL 255
     #else
-      #define RGBLIGHT_LIMIT_VAL 120
+        #if RGBLED_NUM <= 16
+            #define RGBLIGHT_LIMIT_VAL 130
+        #else
+        #define RGBLIGHT_LIMIT_VAL 120
+        #endif
     #endif
-  #endif
-  #define RGBLIGHT_VAL_STEP 17
+    #define RGBLIGHT_VAL_STEP 17
 #else
-  #if RGBLED_NUM <= 6
-    #define RGBLIGHT_LIMIT_VAL 90
-  #else
-    #if RGBLED_NUM <= 16
-      #define RGBLIGHT_LIMIT_VAL 45
+    #if RGBLED_NUM <= 6
+        #define RGBLIGHT_LIMIT_VAL 90
     #else
-      #define RGBLIGHT_LIMIT_VAL 35
+        #if RGBLED_NUM <= 16
+            #define RGBLIGHT_LIMIT_VAL 45
+        #else
+        #define RGBLIGHT_LIMIT_VAL 35
+        #endif
     #endif
-  #endif
-  #define RGBLIGHT_VAL_STEP 4
+    #define RGBLIGHT_VAL_STEP 4
 #endif
 #define RGBLIGHT_HUE_STEP 10
 #define RGBLIGHT_SAT_STEP 17
@@ -122,7 +122,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // fix iPhone and iPad power adapter issue
   // iOS device need lessthan 100
   #define USB_MAX_POWER_CONSUMPTION 100
-#endif
+#endif */
 
 /*
  * Feature disable options
