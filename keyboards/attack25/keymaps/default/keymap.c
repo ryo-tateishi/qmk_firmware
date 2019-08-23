@@ -1,22 +1,26 @@
 #include QMK_KEYBOARD_H
 #include <drivers/avr/pro_micro.h>
-
-#ifdef RGBLIGHT_ENABLE
+#if defined(RGBLIGHT_ENABLE)
 //Following line allows macro to read current RGB settings
-  extern rgblight_config_t rgblight_config;
-  rgblight_config_t RGB_current_config;
+    #define RGB_CONFIG rgblight_config
+    extern rgblight_config_t RGB_CONFIG;
+    rgblight_config_t RGB_current_config;
+#elif defined(RGB_MATRIX_ENABLE)
+    #include <../rev1/rgb_matrix_layer.h>
+    #define RGB_CONFIG rgb_matrix_config
+    extern rgb_config_t RGB_CONFIG;
+    rgb_config_t RGB_current_config;
 #endif
 
 enum layer_number {
-  _NUM = 0,
-  _FN,
-  _RGB,
-  _BLED
+    _NUM = 0,
+    _FN,
+    _RGB,
+    _BLED
 };
 
 enum custom_keycodes {
-  RGB_MODF = SAFE_RANGE,
-  RGB_MODR,
+  RGB_MODR = SAFE_RANGE,
   RGBHINC,
   RGBHDEC,
   RGBSINC,
@@ -43,10 +47,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	XXXXXXX, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS), \
 
 [_RGB] = LAYOUT_ortho_5x5( \
-	RGB_TOG, RGB_MODF, RGBHINC, RGBSINC, RGBVINC, \
-  RGBRST,  RGB_MODR, RGBHDEC, RGBSDEC, RGBVDEC, \
-	RGB_MODE_PLAIN, RGB_MODE_BREATHE, RGB_MODE_RAINBOW, XXXXXXX, XXXXXXX, \
-	RGB_MODE_SWIRL, RGB_MODE_SNAKE, RGB_MODE_KNIGHT, XXXXXXX, XXXXXXX, \
+	RGB_TOG, RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, \
+    RGBRST,  RGB_MODR, RGB_HUD, RGB_SAD, RGB_VAD, \
+	RGB_MODE_PLAIN, RGB_MODE_BREATHE, RGB_MODE_RAINBOW, RGB_SPI, XXXXXXX, \
+	RGB_MODE_SWIRL, RGB_MODE_SNAKE, RGB_MODE_KNIGHT, RGB_SPD, XXXXXXX, \
 	KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS), \
 
   [_BLED] = LAYOUT_ortho_5x5(
@@ -60,9 +64,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 bool RGB_momentary_on;
 
 void matrix_init_user(void) {
-    #ifdef RGBLIGHT_ENABLE
+    #if defined(RGBLIGHT_ENABLE)
 	    rgblight_init();
-      RGB_current_config = rgblight_config;
+        RGB_current_config = RGB_CONFIG;
+    #elif defined(RGB_MATRIX_ENABLE)
+        RGB_current_config = RGB_CONFIG;
     #endif
     TX_RX_LED_INIT; //Turn LEDs off by default
     RXLED0;
@@ -73,174 +79,240 @@ void matrix_scan_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-	case RGB_MODF:
-    #ifdef RGBLIGHT_ENABLE
-	    if (record->event.pressed){
-		  rgblight_mode_noeeprom(RGB_current_config.mode);
-		  rgblight_step();
-		  RGB_current_config.mode = rgblight_config.mode;
-	  }
-    #endif
-	  return false;
-	  break;
-	case RGB_MODR:
-    #ifdef RGBLIGHT_ENABLE
-	    if (record->event.pressed)
-	    {
-		  rgblight_mode_noeeprom(RGB_current_config.mode);
-		  rgblight_step_reverse();
-		  RGB_current_config.mode = rgblight_config.mode;
-	    }
-    #endif
-	  return false;
-	  break;
+    switch (keycode) {
+	    case RGB_MOD:
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+	        if (record->event.pressed) {
+		        rgblight_mode_noeeprom(RGB_current_config.mode);
+		        rgblight_step();
+		        RGB_current_config.mode = RGB_CONFIG.mode;
+	        }
+            return false;
+        #else
+            return true;
+        #endif
+	    break;
+
+	    case RGB_MODR:
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+	        if (record->event.pressed) {
+		        rgblight_mode_noeeprom(RGB_current_config.mode);
+		        rgblight_step_reverse();
+		        RGB_current_config.mode = RGB_CONFIG.mode;
+	        }
+            return false;
+        #else
+            return true;
+        #endif
+	    break;
+
 	case RGBRST:
-    #ifdef RGBLIGHT_ENABLE
-      if (record->event.pressed) {
-        eeconfig_update_rgblight_default();
-        rgblight_enable();
-        RGB_current_config = rgblight_config;
-	  }
-    #endif
-	  return false;
-	  break;
-	case RGBHINC:
-    #ifdef RGBLIGHT_ENABLE
-	    if (record->event.pressed) {
-	      rgblight_increase_hue();
-		    RGB_current_config.hue = rgblight_config.hue;
-	    }
-    #endif
-    return false;
-	  break;
-	case RGBHDEC:
-    #ifdef RGBLIGHT_ENABLE
-	    if (record->event.pressed) {
-		    rgblight_decrease_hue();
-		    RGB_current_config.hue = rgblight_config.hue;
-	    }
-    #endif
-	  return false;
-	  break;
-	case RGBSINC:
-    #ifdef RGBLIGHT_ENABLE
-	    if (record->event.pressed) {
-		    rgblight_increase_sat();
-		    RGB_current_config.sat = rgblight_config.sat;
-	    }
-    #endif
-    return false;
-	  break;
-	case RGBSDEC:
-    #ifdef RGBLIGHT_ENABLE
-	    if (record->event.pressed) {
-		    rgblight_decrease_sat();
-		    RGB_current_config.sat = rgblight_config.sat;
-	    }
-    #endif
-	  return false;
-	  break;
-	case RGBVINC:
-    #ifdef RGBLIGHT_ENABLE
-	    if (record->event.pressed) {
-		    rgblight_increase_val();
-		    RGB_current_config.val = rgblight_config.val;
-	    }
-    #endif
-    return false;
-	  break;
-	case RGBVDEC:
-    #ifdef RGBLIGHT_ENABLE
-	    if (record->event.pressed) {
-		    rgblight_decrease_val();
-		    RGB_current_config.val = rgblight_config.val;
-	    }
-    #endif
-	  return false;
-	  break;
-  case RGB_MODE_PLAIN:
-  case RGB_MODE_BREATHE:
-  case RGB_MODE_RAINBOW:
-  case RGB_MODE_SWIRL:
-  case RGB_MODE_SNAKE:
-  case RGB_MODE_KNIGHT:
-    #ifdef RGBLIGHT_ENABLE
-	    if (record->event.pressed) {
-	      } else {
-			  RGB_current_config.mode = rgblight_config.mode;
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+            if (record->event.pressed) {
+                #ifdef RGBLIGHT_ENABLE
+                    eeconfig_update_rgblight_default();
+                #else
+                    eeconfig_update_rgb_matrix_default();
+                #endif
+                rgblight_enable();
+                RGB_current_config = RGB_CONFIG;
+	        }
+        #endif
+	    return false;
+	    break;
+
+	case RGB_HUI:
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+	        if (record->event.pressed) {
+	            rgblight_increase_hue();
+                #ifdef RGBLIGHT_ENABLE
+		            RGB_current_config.hue = RGB_CONFIG.hue;
+                #else
+                    RGB_current_config.hsv.h = RGB_CONFIG.hsv.h;
+                #endif
+	        }
+        return false;
+        #else
+            return true;
+        #endif
+	    break;
+
+	case RGB_HUD:
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+        	if (record->event.pressed) {
+		        rgblight_decrease_hue();
+                #ifdef RGBLIGHT_ENABLE
+                    RGB_current_config.hue = RGB_CONFIG.hue;
+                #else
+                    RGB_current_config.hsv.h = RGB_CONFIG.hsv.h;
+                #endif
+	        }
+            return false;
+        #else
+	        return true;
+        #endif
+	    break;
+
+	case RGB_SAI:
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+            if (record->event.pressed) {
+		        rgblight_increase_sat();
+                #ifdef RGBLIGHT_ENABLE
+		            RGB_current_config.sat = RGB_CONFIG.sat;
+                #else
+                    RGB_current_config.hsv.s = RGB_CONFIG.hsv.s;
+                #endif
+	        }
+            return false;
+        #else
+            return true;
+        #endif
+    	break;
+
+	case RGB_SAD:
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+	        if (record->event.pressed) {
+		        rgblight_decrease_sat();
+                #ifdef RGBLIGHT_ENABLE
+		            RGB_current_config.sat = RGB_CONFIG.sat;
+                #else
+                    RGB_current_config.hsv.s = RGB_CONFIG.hsv.s;
+                #endif
+	        }
+            return false;
+        #else
+            return true;
+        #endif
+	    break;
+
+	case RGB_VAI:
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+	        if (record->event.pressed) {
+		        rgblight_increase_val();
+                #ifdef RGBLIGHT_ENABLE
+		            RGB_current_config.val = RGB_CONFIG.val;
+                #else
+                    RGB_current_config.hsv.v = RGB_CONFIG.hsv.v;
+                #endif
+	        }
+            return false;
+        #else
+            return true;
+        #endif
+    	break;
+
+	case RGB_VAD:
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+	        if (record->event.pressed) {
+		        rgblight_decrease_val();
+                #ifdef RGBLIGHT_ENABLE
+		            RGB_current_config.val = RGB_CONFIG.val;
+                #else
+                    RGB_current_config.hsv.v = RGB_CONFIG.hsv.v;
+                #endif
+	        }
+            return false;
+        #else
+            return true;
+        #endif
+	    break;
+
+    case RGB_MODE_PLAIN:
+    case RGB_MODE_BREATHE:
+    case RGB_MODE_RAINBOW:
+    case RGB_MODE_SWIRL:
+    case RGB_MODE_SNAKE:
+    case RGB_MODE_KNIGHT:
+        #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+	        if (record->event.pressed) {
+	        } else {
+			  RGB_current_config.mode = RGB_CONFIG.mode;
 		    }
-    #endif
-	  return true;
-	  break;
+        #endif
+	    return true;
+	    break;
+
 	case P00:
-	  if (record->event.pressed) {
-	     SEND_STRING("00");
-	  }
-	  return false;
-	  break;
+	    if (record->event.pressed) {
+	        SEND_STRING("00");
+	    }
+	    return false;
+	    break;
+
 	default:
 	  break;
-  }
-  return true;
+    }
+    return true;
 }
 
 
-uint32_t layer_state_set_user(uint32_t state) {
-  #ifdef RGBLIGHT_ENABLE
-	  switch (biton32(state)) {
-      case _FN:
-        rgblight_sethsv_noeeprom_orange();
-        rgblight_mode_noeeprom(1);
-		    RGB_momentary_on = true;
-		    break;
-	    case _RGB:
-		    break;
-	    default:
-		    rgblight_sethsv_noeeprom(RGB_current_config.hue, RGB_current_config.sat, RGB_current_config.val);
-		    rgblight_mode_noeeprom(RGB_current_config.mode);
-		    RGB_momentary_on = false;
-        break;
-	  }
-	#endif
-	return state;
-}
 
-void led_set_user(uint8_t usb_led) {
-	#ifdef RGBLIGHT_ENABLE
+#ifdef RGB_MATRIX_ENABLE
+void rgb_matrix_indicators_user(void) {
+	if (!g_suspend_state) {
+	    switch (biton32(layer_state)) {
+	        case _FN:
+		        RGB_momentary_on = true;
+                #ifdef RGBLED_BOTH
+		            rgb_matrix_layer_helper(HSV_ORANGE, 0, rgb_matrix_config.speed, LED_FLAG_UNDERGLOW);
+                #else
+                    rgb_matrix_layer_helper(HSV_ORANGE, 0, rgb_matrix_config.speed, LED_FLAG_NONE);
+                #endif
+                break;
+
+	        case _RGB:
+                break;
+
+            default:
+                RGB_momentary_on = false;
+                break;
+	    }
+	}
+    uint8_t usb_led = host_keyboard_leds();
     if (!RGB_momentary_on) {
 	    if (usb_led & (1 << USB_LED_NUM_LOCK)) {
-	      rgblight_sethsv_noeeprom(RGB_current_config.hue, RGB_current_config.sat, RGB_current_config.val);
-			  rgblight_mode_noeeprom(RGB_current_config.mode);
+            rgb_matrix_sethsv_noeeprom(RGB_current_config.hsv.h, RGB_current_config.hsv.s, RGB_current_config.hsv.v);
+            rgblight_mode_noeeprom(RGB_current_config.mode);
 	    } else {
-		    rgblight_sethsv_noeeprom_azure();
-        rgblight_mode_noeeprom(1);
+            #ifdef RGBLED_BOTH
+                rgb_matrix_layer_helper(HSV_AZURE, 1, rgb_matrix_config.speed, LED_FLAG_UNDERGLOW);
+            #else
+                rgb_matrix_layer_helper(HSV_AZURE, 1, rgb_matrix_config.speed, LED_FLAG_NONE);
+            #endif
+	        }
 	    }
-	  }
-	#endif
-
-	if (usb_led & (1 << USB_LED_CAPS_LOCK)) {
-
-  } else {
-
-	}
-
-	if (usb_led & (1 << USB_LED_SCROLL_LOCK)) {
-
-	} else {
-
-	}
-
-	if (usb_led & (1 << USB_LED_COMPOSE)) {
-
-	} else {
-
-	}
-
-	if (usb_led & (1 << USB_LED_KANA)) {
-
-	} else {
-
-	}
-
 }
+#elif defined(RGBLIGHT_ENABLE)
+    uint32_t layer_state_set_user(uint32_t state) {
+	    switch (biton32(state)) {
+            case _FN:
+                rgblight_sethsv_noeeprom(HSV_ORANGE);
+                rgblight_mode_noeeprom(1);
+		        RGB_momentary_on = true;
+		        break;
+
+            case _RGB:
+		        break;
+
+            default:
+		        rgblight_sethsv_noeeprom(RGB_current_config.hue, RGB_current_config.sat, RGB_current_config.val);
+	            rgblight_mode_noeeprom(RGB_current_config.mode);
+	            RGB_momentary_on = false;
+                break;
+	    }
+	    return state;
+    }
+
+    void led_set_user(uint8_t usb_led) {
+        if (!RGB_momentary_on) {
+	        if (usb_led & (1 << USB_LED_NUM_LOCK)) {
+                rgblight_sethsv_noeeprom(RGB_current_config.hue, RGB_current_config.sat, RGB_current_config.val);
+			    rgblight_mode_noeeprom(RGB_current_config.mode);
+	        } else {
+		        rgblight_sethsv_noeeprom_azure();
+                rgblight_mode_noeeprom(1);
+	        }
+	    }
+    }
+#endif
+

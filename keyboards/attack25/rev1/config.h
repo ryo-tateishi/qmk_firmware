@@ -36,12 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* COL2ROW or ROW2COL */
 #define DIODE_DIRECTION ROW2COL
 
-/* number of backlight levels */
-
-#ifdef BACKLIGHT_PIN
-#    define BACKLIGHT_LEVELS 3
-#endif
-
 /* Set 0 if debouncing isn't needed */
 #define DEBOUNCE 5
 
@@ -54,21 +48,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* prevent stuck modifiers */
 #define PREVENT_STUCK_MODIFIERS
 
-#ifdef RGBLED_BOTH
-#    define RGBLED_NUM 30
-#else
-    #ifdef RGBLED_BACK
-        #define RGBLED_NUM 25
+#define RGB_DI_PIN D3
+
+#ifdef RGB_MATRIX_ENABLE
+    #ifdef RGBLED_BOTH
+        #define RGBLED_NUM 30
     #else
-        #ifdef RGBLED_1LED
-            #define RGBLED_NUM 1
-        #else
-            #define RGBLED_NUM 5
-        #endif
+        #define RGBLED_NUM 25
     #endif
+    #define DRIVER_LED_TOTAL RGBLED_NUM
 #endif
 
-#define RGB_DI_PIN D3
+#ifdef RGBLIGHT_ENABLE
+    #ifdef RGBLED_BOTH
+        #define RGBLED_NUM 30
+    #else
+        #ifdef RGBLED_BACK
+            #define RGBLED_NUM 25
+        #else
+            #ifdef RGBLED_1LED
+                #define RGBLED_NUM 1
+            #else
+                #define RGBLED_NUM 5
+            #endif
+        #endif
+    #endif
+    #define RGBLIGHT_HUE_STEP 10
+    #define RGBLIGHT_SAT_STEP 17
+#endif
 
 #ifndef IOS_DEVICE_ENABLE
     #if RGBLED_NUM <= 6
@@ -94,10 +101,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #define RGBLIGHT_VAL_STEP 4
 #endif
 
-#define RGBLIGHT_HUE_STEP 10
-#define RGBLIGHT_SAT_STEP 17
-
-#if defined(RGBLIGHT_ENABLE) && !defined(IOS_DEVICE_ENABLE)
+#if (defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)) && !defined(IOS_DEVICE_ENABLE)
 // USB_MAX_POWER_CONSUMPTION value
 //  120  RGBoff
 //  330  RGB 6
