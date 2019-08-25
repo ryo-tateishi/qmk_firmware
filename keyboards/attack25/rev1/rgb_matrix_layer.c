@@ -1,3 +1,7 @@
+//
+// Most of the code is shamelessly copied from Drashna's rgb_stuff.c
+//
+
 #include "rgb_matrix_layer.h"
 #include QMK_KEYBOARD_H
 
@@ -33,5 +37,9 @@
                 break;
             }
         }
+    }
+
+    void rgb_matrix_turnoff(uint8_t led_type) {
+        rgb_matrix_layer_helper(0, 0, 0, 0, 0, led_type);
     }
 

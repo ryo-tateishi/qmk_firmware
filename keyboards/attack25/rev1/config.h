@@ -80,20 +80,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef IOS_DEVICE_ENABLE
     #if RGBLED_NUM <= 6
         #define RGBLIGHT_LIMIT_VAL 255
+        #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 255
     #else
-        #if RGBLED_NUM <= 16
+        #if RGBLED_NUM <= 30
             #define RGBLIGHT_LIMIT_VAL 130
+            #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 180
         #else
             #define RGBLIGHT_LIMIT_VAL 120
+            #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 120
         #endif
     #endif
     #define RGBLIGHT_VAL_STEP 17
 #else
     #if RGBLED_NUM <= 6
-        #define RGBLIGHT_LIMIT_VAL 90
+        #define RGBLIGHT_LIMIT_VAL 180
     #else
-        #if RGBLED_NUM <= 16
-            #define RGBLIGHT_LIMIT_VAL 45
+        #if RGBLED_NUM <= 30
+            #define RGBLIGHT_LIMIT_VAL 90
         #else
             #define RGBLIGHT_LIMIT_VAL 35
         #endif

@@ -21,12 +21,6 @@ enum layer_number {
 
 enum custom_keycodes {
   RGB_MODR = SAFE_RANGE,
-  RGBHINC,
-  RGBHDEC,
-  RGBSINC,
-  RGBSDEC,
-  RGBVINC,
-  RGBVDEC,
   RGBRST,
   P00
 };
@@ -49,8 +43,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_RGB] = LAYOUT_ortho_5x5( \
 	RGB_TOG, RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, \
     RGBRST,  RGB_MODR, RGB_HUD, RGB_SAD, RGB_VAD, \
-	RGB_MODE_PLAIN, RGB_MODE_BREATHE, RGB_MODE_RAINBOW, RGB_SPI, XXXXXXX, \
-	RGB_MODE_SWIRL, RGB_MODE_SNAKE, RGB_MODE_KNIGHT, RGB_SPD, XXXXXXX, \
+	RGB_MODE_PLAIN, RGB_MODE_BREATHE, RGB_SPI, RGB_SPI, XXXXXXX, \
+	RGB_MODE_SWIRL, RGB_MODE_SNAKE, RGB_SPD, RGB_SPD, XXXXXXX, \
 	KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS), \
 
   [_BLED] = LAYOUT_ortho_5x5(
@@ -106,7 +100,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #endif
 	    break;
 
-	case RGBRST:
+	    case RGBRST:
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
             if (record->event.pressed) {
                 #ifdef RGBLIGHT_ENABLE
@@ -121,7 +115,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	    return false;
 	    break;
 
-	case RGB_HUI:
+	    case RGB_HUI:
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
 	        if (record->event.pressed) {
 	            rgblight_increase_hue();
@@ -137,7 +131,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #endif
 	    break;
 
-	case RGB_HUD:
+	    case RGB_HUD:
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
         	if (record->event.pressed) {
 		        rgblight_decrease_hue();
@@ -153,7 +147,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #endif
 	    break;
 
-	case RGB_SAI:
+	    case RGB_SAI:
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
             if (record->event.pressed) {
 		        rgblight_increase_sat();
@@ -169,7 +163,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #endif
     	break;
 
-	case RGB_SAD:
+	    case RGB_SAD:
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
 	        if (record->event.pressed) {
 		        rgblight_decrease_sat();
@@ -185,7 +179,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #endif
 	    break;
 
-	case RGB_VAI:
+	    case RGB_VAI:
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
 	        if (record->event.pressed) {
 		        rgblight_increase_val();
@@ -201,7 +195,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #endif
     	break;
 
-	case RGB_VAD:
+	    case RGB_VAD:
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
 	        if (record->event.pressed) {
 		        rgblight_decrease_val();
@@ -249,7 +243,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 #ifdef RGB_MATRIX_ENABLE
 void rgb_matrix_indicators_user(void) {
-	if (!g_suspend_state) {
+	if (!g_suspend_state && rgb_matrix_config.enable) {
 	    switch (biton32(layer_state)) {
 	        case _FN:
 		        RGB_momentary_on = true;
@@ -269,7 +263,7 @@ void rgb_matrix_indicators_user(void) {
 	    }
 	}
     uint8_t usb_led = host_keyboard_leds();
-    if (!RGB_momentary_on) {
+    if (!RGB_momentary_on && rgb_matrix_config.enable) {
 	    if (usb_led & (1 << USB_LED_NUM_LOCK)) {
             rgb_matrix_sethsv_noeeprom(RGB_current_config.hsv.h, RGB_current_config.hsv.s, RGB_current_config.hsv.v);
             rgblight_mode_noeeprom(RGB_current_config.mode);
