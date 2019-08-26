@@ -9,7 +9,7 @@ EXTRAKEY_ENABLE = yes       # Audio control and System control(+450)
 CONSOLE_ENABLE = no         # Console for debug(+400)
 COMMAND_ENABLE = no        # Commands for debug and configuration
 NKRO_ENABLE = no            # Nkey Rollover - if this doesn't work, see here: https://github.com/tmk/tmk_keyboard/wiki/FAQ#nkro-doesnt-work
-#BACKLIGHT_ENABLE = no      # Enable keyboard backlight functionality
+BACKLIGHT_ENABLE = yes      # Enable keyboard backlight functionality
 MIDI_ENABLE = no            # MIDI controls
 AUDIO_ENABLE = no           # Audio output on port C6
 UNICODE_ENABLE = no         # Unicode
@@ -23,6 +23,7 @@ define ATTACK25_CUSTOMISE_MSG
   	$(info -  LED_UNDERGLOW_ENABLE=$(LED_UNDERGLOW_ENABLE))
   	$(info -  LED_BOTH_ENABLE=$(LED_BOTH_ENABLE))
   	$(info -  LED_1LED_ENABLE=$(LED_1LED_ENABLE))
+    $(info -  RGB_MATRIX=$(RGB_MATRIX))
   	$(info -  LED_ANIMATION=$(LED_ANIMATIONS))
   	$(info -  IOS_DEVICE_ENABLE=$(IOS_DEVICE_ENABLE))
 endef
@@ -32,6 +33,7 @@ LED_BACK_ENABLE = no        # LED backlight (Enable WS2812 RGB backlight)
 LED_UNDERGLOW_ENABLE = no   # LED underglow (Enable WS2812 RGB underlight)
 LED_BOTH_ENABLE = no        # LED backlight and underglow
 LED_1LED_ENABLE = no        # LED 1LED (Enable WS2812 RGB light)
+RGB_MATRIX = no             # RGB LED Matrix
 LED_ANIMATIONS = yes        # LED animations
 IOS_DEVICE_ENABLE = no      # connect to IOS device (iPad,iPhone)
 Link_Time_Optimization = no # if firmware size over limit, try this option
@@ -40,7 +42,7 @@ Link_Time_Optimization = no # if firmware size over limit, try this option
 
 ### Attack25 keyboard 'default' keymap: convenient command line option
 ##    make ATTACK25=<options> attack25:defualt
-##    option= back | under | both | 1led | na | ios
+##    option= back | under | both | 1led | matrix | na | ios
 ##    ex.
 ##      make ATTACK25=under    attack25:defualt
 ##      make ATTACK25=under,ios attack25:defualt
@@ -63,19 +65,22 @@ ifneq ($(strip $(ATTACK25)),)
   	ifeq ($(findstring 1led,$(ATTACK25)), 1led)
     	LED_1LED_ENABLE = yes
   	endif
+	ifeq ($(findstring matrix,$(ATTACK25)), matrix)
+    	RGB_MATRIX = yes
+    endif
   	ifeq ($(findstring na,$(ATTACK25)), na)
     	LED_ANIMATIONS = no
   	endif
   	ifeq ($(findstring ios,$(ATTACK25)), ios)
-		IOS_DEVICE_ENABLE = yes
+    	IOS_DEVICE_ENABLE = yes
   	endif
   	$(eval $(call ATTACK25_CUSTOMISE_MSG))
   	$(info )
 endif
 
 ifeq ($(strip $(LED_BACK_ENABLE)), yes)
-    RGBLIGHT_ENABLE = yes
-    OPT_DEFS += -DRGBLED_BACK
+	RGBLIGHT_ENABLE = yes
+	OPT_DEFS += -DRGBLED_BACK
   	ifeq ($(strip $(LED_UNDERGLOW_ENABLE)), yes)
      	OPT_DEFS += -DRGBLED_BOTH
     	$(info both LED_BACK_ENABLE and LED_UNDERGLOW_ENABLE)
@@ -90,6 +95,11 @@ else ifeq ($(strip $(LED_1LED_ENABLE)), yes)
     OPT_DEFS += -DRGBLED_1LED
 else
     RGBLIGHT_ENABLE = no
+endif
+
+ifeq ($(strip $(RGB_MATRIX)), yes)
+  RGBLIGHT_ENABLE = no
+  RGB_MATRIX_ENABLE = WS2812
 endif
 
 ifeq ($(strip $(IOS_DEVICE_ENABLE)), yes)

@@ -1,17 +1,14 @@
 #include QMK_KEYBOARD_H
 #include <drivers/avr/pro_micro.h>
 
-#ifdef RGBLIGHT_ENABLE
-//Following line allows macro to read current RGB settings
-    #define RGB_CONFIG rgblight_config
-    extern rgblight_config_t RGB_CONFIG;
-    rgblight_config_t RGB_current_config;
-#elif defined(RGB_MATRIX_ENABLE)
-    #include <../rev1/rgb_matrix_layer.h>
-    #define RGB_CONFIG rgb_matrix_config
-    extern rgb_config_t RGB_CONFIG;
-    rgb_config_t RGB_current_config;
+#if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+    extern RGB_CONFIG_t RGB_CONFIG;
+    RGB_CONFIG_t RGB_current_config;
+    bool RGB_momentary_on;
 #endif
+
+bool MAC_mode = true;
+bool NumLock_Mode = true;
 
 enum layer_number {
     _NUM = 0,
@@ -64,10 +61,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX)
 };
-
-bool RGB_momentary_on = false;
-bool MAC_mode = true;
-bool NumLock_Mode = true;
 
 void matrix_init_user(void) {
     #if defined(RGBLIGHT_ENABLE)
@@ -337,6 +330,11 @@ void rgb_matrix_indicators_user(void) {
                 rgblight_mode_noeeprom(1);
 		        RGB_momentary_on = true;
 		        break;
+
+            case _NUMOFF:
+                rgblight_sethsv_noeeprom(HSV_AZURE);
+			    rgblight_mode_noeeprom(1);
+                break;
 
             case _RGB:
 		        break;
