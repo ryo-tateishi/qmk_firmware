@@ -5,6 +5,7 @@
 #include "rgb_matrix_layer.h"
 #include QMK_KEYBOARD_H
 
+#if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
     #include "lib/lib8tion/lib8tion.h"
     //extern led_config_t g_led_config;
     void rgb_matrix_layer_helper(uint8_t hue, uint8_t sat, uint8_t val, uint8_t mode, uint8_t speed, uint8_t led_type) {
@@ -42,4 +43,4 @@
     void rgb_matrix_turnoff(uint8_t led_type) {
         rgb_matrix_layer_helper(0, 0, 0, 0, 0, led_type);
     }
-
+#endif
