@@ -41,9 +41,9 @@
  |-----+-----+-----+-----+-----|
  | RST | MODR| HDEC| SDEC| VDEC|
  |-----+-----+-----+-----+-----|
- |PLAIN|BREAT|RAINB|     |     |
+ |PLAIN|BREAT| SPI |     |     |
  |-----+-----+-----+-----+-----|
- |SWIRL|SNAKE|KNIGH|     |     |
+ |SWIRL|SNAKE| SPD |     |     |
  |-----+-----+-----+-----+-----|
  |     |     |     |     |     |
  `------------------------------
@@ -75,11 +75,12 @@ $ make attack25:default:clean
 ```
 ### Attack25 keyboard 'default' keymap: convenient command line option
 ##    make ATTACK25=<options> attack25:defualt
-##    option= back | under | both | 1led | na | ios
+##    option= back | under | both | 1led | matrix | na | ios
 ##    ex.
 ##      make ATTACK25=under    attack25:defualt
 ##      make ATTACK25=under,ios attack25:defualt
 ##      make ATTACK25=back     attack25:default
+##      make ATTACK25=back,matrix  attack25:default
 ##      make ATTACK25=back,na  attack25:default
 ##      make ATTACK25=back,ios attack25:default
 ##      make ATTACK25=1led     attack25:default
@@ -90,6 +91,7 @@ back...Enable backlight RGB LED
 under...Enable underglow RGB LED
 both...Enable backlight RGB LED and underglow RGB LED
 1led...Enable RGB LED at SW1
+matrix...Enable RGB_MATRIX
 na...Disable RGB animation
 ios...for iPad/iPhone
 

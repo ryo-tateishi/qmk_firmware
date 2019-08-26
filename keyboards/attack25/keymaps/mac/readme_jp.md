@@ -1,4 +1,4 @@
-﻿# The Default Attack25 Layout
+﻿# The mac Attack25 Layout
 ## 配列
 
 ### Default Layer
@@ -41,9 +41,9 @@
  |-----+-----+-----+-----+-----|
  | RST | MODR| HDEC| SDEC| VDEC|
  |-----+-----+-----+-----+-----|
- |PLAIN|BREAT|RAINB|     |     |
+ |PLAIN|BREAT| SPI |     |     |
  |-----+-----+-----+-----+-----|
- |SWIRL|SNAKE|KNIGH|     |     |
+ |SWIRL|SNAKE| SPD |     |     |
  |-----+-----+-----+-----+-----|
  |     |     |     |     |     |
  `------------------------------
@@ -82,11 +82,12 @@ $ make attack25:default:clean
 ```
 ### Attack25 keyboard 'default' keymap: convenient command line option
 ##    make ATTACK25=<options> attack25:defualt
-##    option= back | under | both | 1led | na | ios
+##    option= back | under | both | 1led | matrix | na | ios
 ##    ex.
 ##      make ATTACK25=under    attack25:defualt
 ##      make ATTACK25=under,ios attack25:defualt
 ##      make ATTACK25=back     attack25:default
+##      make ATTACK25=back,matrix  attack25:default
 ##      make ATTACK25=back,na  attack25:default
 ##      make ATTACK25=back,ios attack25:default
 ##      make ATTACK25=1led     attack25:default
@@ -101,6 +102,7 @@ back...バックライトLEDを有効にする場合（キーキャップ側を�
 under...アンダーグロウLEDを有効にする場合（底面側を照らす5個のLEDを実装した場合）
 both...バックライトLED25個の後にアンダーグロウLED5個を接続した場合
 1led...SW1の部分にのみ実装したLEDを有効にする場合（LEDの実装はバックライト、アンダーグロウのどちらでもかまいませんが、バックライトの方がメンテナンスが容易）
+matrix...バックライトLED25個を実装、もしくはそれに加えてアンダーグロウLEDを5個実装した際に疑似RGBマトリックス方式を選ぶ場合
 na...RGBのアニメーションをオフにする場合
 ios...iPad/iPhoneなどのiOS機器に接続する場合（消費電力を制限します）
 
