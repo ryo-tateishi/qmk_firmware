@@ -1,21 +1,21 @@
 #include QMK_KEYBOARD_H
 #include <drivers/avr/pro_micro.h>
-#include <../rev1/macdetect.h>
+#include <macdetect.h>
 
-#ifdef RGBLIGHT_ENABLE
-//Following line allows macro to read current RGB settings
-    #define RGB_CONFIG rgblight_config
-    extern rgblight_config_t RGB_CONFIG;
-    rgblight_config_t RGB_current_config;
-#elif defined(RGB_MATRIX_ENABLE)
-    #include <../rev1/rgb_matrix_layer.h>
-    #define RGB_CONFIG rgb_matrix_config
-    extern rgb_config_t RGB_CONFIG;
-    rgb_config_t RGB_current_config;
+#if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+    extern RGB_CONFIG_t RGB_CONFIG;
+    RGB_CONFIG_t RGB_current_config;
+    bool RGB_momentary_on = false;
+    uint16_t splash_timer;
+    bool splash_end = false;
 #endif
 
-enum layer_number
-{
+extern keymap_config_t keymap_config;
+static bool MAC_mode = true;
+static bool NumLock_Mode = true;
+static bool macos_checked = false;
+
+enum layer_number {
     _NUM = 0,
     _NUMOFF,
     _FN,
@@ -23,21 +23,12 @@ enum layer_number
     _BLED
 };
 
-enum custom_keycodes
-{
+enum custom_keycodes {
     RGB_MODR = SAFE_RANGE,
     RGBRST,
     P00,
     WINMAC
 };
-
-#if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
-    static bool RGB_momentary_on = false;
-#endif
-
-static bool MAC_mode = true;
-static bool NumLock_Mode = true;
-static bool macos_checked = false;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_NUM] = LAYOUT_ortho_5x5(
@@ -75,37 +66,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX)
-        };
-
-void splash_os_color(bool mode) {
-    #ifdef RGBLIGHT_ENABLE
-        if (mode) {
-            rgblight_sethsv_noeeprom_coral();
-        } else {
-            rgblight_sethsv_noeeprom_turquoise();
-        }
-        wait_ms(2000);
-    #elif defined(RGB_MATRIX_ENABLE)
-        if (mode) {
-            rgb_matrix_layer_helper(HSV_CORAL, 0, rgb_matrix_config.speed, LED_FLAG_NONE);
-        } else {
-            rgb_matrix_layer_helper(HSV_TURQUOISE, 0, rgb_matrix_config.speed, LED_FLAG_NONE);
-        }
-        rgblight_mode_noeeprom(1);
-        wait_ms(2000);
-    #endif
-    return;
-}
+};
 
 void matrix_init_user(void) {
     #if defined(RGBLIGHT_ENABLE)
-        MACOS_CHECK
-        splash_os_color(MAC_mode);
 	    rgblight_init();
         RGB_current_config = RGB_CONFIG;
     #elif defined(RGB_MATRIX_ENABLE)
-        MACOS_CHECK
-        splash_os_color(MAC_mode);
+        rgb_matrix_init();
         RGB_current_config = RGB_CONFIG;
     #endif
     TX_RX_LED_INIT; //Turn LEDs off by default
@@ -114,17 +82,53 @@ void matrix_init_user(void) {
 }
 
 void matrix_scan_user(void) {
+    if (!macos_checked) {
+        switch(macos_check()) {
+            case 0 ... 4:
+                break;
+            case 5:
+                macos_checked = true;
+                MAC_mode = !keymap_config.swap_lalt_lgui;
+                #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+                    rgblight_mode_noeeprom(1);
+                    if (keymap_config.swap_lalt_lgui) {
+                        rgb_sethsv_noeeprom(HSV_BLUE);
+                    } else {
+                        rgb_sethsv_noeeprom(HSV_ORANGE);
+                    }
+                    splash_timer = timer_read();
+                #endif
+                break;
+            default:
+                break;
+        }
+    }
+    #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+        if (!splash_end && (timer_elapsed(splash_timer) > 2000)) {
+            splash_end = true;
+            rgb_sethsv_noeeprom(RGB_current_config_hue, RGB_current_config_sat, RGB_current_config_val);
+            rgblight_mode_noeeprom(RGB_current_config.mode);
+    }
+    #endif
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case WINMAC:
             if (record->event.pressed) {
-                MAC_mode = !MAC_mode;
-                if (MAC_mode && !NumLock_Mode) {
-                    SEND_STRING(SS_TAP(X_NUMLOCK));
-                } else if (!MAC_mode) {
-                    layer_off(_NUMOFF);
+                if (!macos_checked) {
+                    macos_checked = true;
+                    #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+                        rgb_sethsv_noeeprom(HSV_ORANGE);
+                        splash_timer = timer_read();
+                    #endif
+                } else {
+                    MAC_mode = !MAC_mode;
+                    if (MAC_mode && !NumLock_Mode) {
+                        SEND_STRING(SS_TAP(X_NUMLOCK));
+                    } else if (!MAC_mode) {
+                        layer_off(_NUMOFF);
+                    }
                 }
             }
             return false;
@@ -181,11 +185,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	    case RGBRST:
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
             if (record->event.pressed) {
-                #ifdef RGBLIGHT_ENABLE
-                    eeconfig_update_rgblight_default();
-                #else
-                    eeconfig_update_rgb_matrix_default();
-                #endif
+                eeconfig_update_rgblight_default();
                 rgblight_enable();
                 RGB_current_config = RGB_CONFIG;
 	        }
@@ -197,11 +197,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
 	        if (record->event.pressed) {
 	            rgblight_increase_hue();
-                #ifdef RGBLIGHT_ENABLE
-		            RGB_current_config.hue = RGB_CONFIG.hue;
-                #else
-                    RGB_current_config.hsv.h = RGB_CONFIG.hsv.h;
-                #endif
+                RGB_current_config_hue = RGB_CONFIG_hue;
 	        }
         return false;
         #else
@@ -213,11 +209,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
         	if (record->event.pressed) {
 		        rgblight_decrease_hue();
-                #ifdef RGBLIGHT_ENABLE
-                    RGB_current_config.hue = RGB_CONFIG.hue;
-                #else
-                    RGB_current_config.hsv.h = RGB_CONFIG.hsv.h;
-                #endif
+                RGB_current_config_hue = RGB_CONFIG_hue;
 	        }
             return false;
         #else
@@ -229,12 +221,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
             if (record->event.pressed) {
 		        rgblight_increase_sat();
-                #ifdef RGBLIGHT_ENABLE
-		            RGB_current_config.sat = RGB_CONFIG.sat;
-                #else
-                    RGB_current_config.hsv.s = RGB_CONFIG.hsv.s;
-                #endif
-	        }
+		        RGB_current_config_sat = RGB_CONFIG_sat;
+            }
             return false;
         #else
             return true;
@@ -245,11 +233,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
 	        if (record->event.pressed) {
 		        rgblight_decrease_sat();
-                #ifdef RGBLIGHT_ENABLE
-		            RGB_current_config.sat = RGB_CONFIG.sat;
-                #else
-                    RGB_current_config.hsv.s = RGB_CONFIG.hsv.s;
-                #endif
+                RGB_current_config_sat = RGB_CONFIG_sat;
 	        }
             return false;
         #else
@@ -261,11 +245,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
 	        if (record->event.pressed) {
 		        rgblight_increase_val();
-                #ifdef RGBLIGHT_ENABLE
-		            RGB_current_config.val = RGB_CONFIG.val;
-                #else
-                    RGB_current_config.hsv.v = RGB_CONFIG.hsv.v;
-                #endif
+	            RGB_current_config_val = RGB_CONFIG_val;
 	        }
             return false;
         #else
@@ -277,11 +257,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
 	        if (record->event.pressed) {
 		        rgblight_decrease_val();
-                #ifdef RGBLIGHT_ENABLE
-		            RGB_current_config.val = RGB_CONFIG.val;
-                #else
-                    RGB_current_config.hsv.v = RGB_CONFIG.hsv.v;
-                #endif
+	            RGB_current_config_val = RGB_CONFIG_val;
 	        }
             return false;
         #else
@@ -317,81 +293,51 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
-/* uint32_t layer_state_set_user(uint32_t state)
-{
-#ifdef RGBLIGHT_ENABLE
-  switch (biton32(state))
-  {
-  case _FN:
-    rgblight_sethsv_noeeprom_orange();
-    rgblight_mode_noeeprom(1);
-    RGB_momentary_on = true;
-    break;
-  case _NUMOFF:
-    rgblight_sethsv_noeeprom_azure();
-    rgblight_mode_noeeprom(1);
-    break;
-  case _RGB:
-    break;
-  default:
-    rgblight_sethsv_noeeprom(RGB_current_config.hue, RGB_current_config.sat, RGB_current_config.val);
-    rgblight_mode_noeeprom(RGB_current_config.mode);
-    RGB_momentary_on = false;
-    break;
-  }
-#endif
-  return state;
-} */
-
 #ifdef RGB_MATRIX_ENABLE
-/* void led_set_user(uint8_t usb_led) {
-    MACOS_CHECK
-    splash_os_color(MAC_mode);
-} */
+    void rgb_matrix_indicators_user(void) {
+	    if (!g_suspend_state && rgb_matrix_config.enable) {
+	        switch (biton32(layer_state)) {
+	            case _FN:
+		            RGB_momentary_on = true;
+                    #ifdef RGBLED_BOTH
+		                rgb_matrix_layer_helper(HSV_ORANGE, 0, rgb_matrix_config.speed, LED_FLAG_UNDERGLOW);
+                    #else
+                        rgb_matrix_layer_helper(HSV_ORANGE, 0, rgb_matrix_config.speed, LED_FLAG_NONE);
+                    #endif
+                    break;
 
-void rgb_matrix_indicators_user(void) {
-	if (!g_suspend_state && rgb_matrix_config.enable) {
-	    switch (biton32(layer_state)) {
-	        case _FN:
-		        RGB_momentary_on = true;
-                #ifdef RGBLED_BOTH
-		            rgb_matrix_layer_helper(HSV_ORANGE, 0, rgb_matrix_config.speed, LED_FLAG_UNDERGLOW);
-                #else
-                    rgb_matrix_layer_helper(HSV_ORANGE, 0, rgb_matrix_config.speed, LED_FLAG_NONE);
-                #endif
-                break;
+                case _NUMOFF:
+                    #ifdef RGBLED_BOTH
+                        rgb_matrix_layer_helper(HSV_AZURE, 1, rgb_matrix_config.speed, LED_FLAG_UNDERGLOW);
+                    #else
+                        rgb_matrix_layer_helper(HSV_AZURE, 1, rgb_matrix_config.speed, LED_FLAG_NONE);
+                    #endif
+                    break;
 
-            case _NUMOFF:
+	            case _RGB:
+                    break;
+
+                default:
+                    RGB_momentary_on = false;
+                    break;
+	        }
+	    }
+        uint8_t usb_led = host_keyboard_leds();
+        if (!RGB_momentary_on && rgb_matrix_config.enable && !MAC_mode && splash_end) {
+            NumLock_Mode = usb_led & (1 << USB_LED_NUM_LOCK);
+	        if (NumLock_Mode) {
+                rgb_sethsv_noeeprom(RGB_current_config_hue, RGB_current_config_sat, RGB_current_config_val);
+                rgblight_mode_noeeprom(RGB_current_config.mode);
+	        } else {
                 #ifdef RGBLED_BOTH
                     rgb_matrix_layer_helper(HSV_AZURE, 1, rgb_matrix_config.speed, LED_FLAG_UNDERGLOW);
                 #else
                     rgb_matrix_layer_helper(HSV_AZURE, 1, rgb_matrix_config.speed, LED_FLAG_NONE);
                 #endif
-                break;
-
-	        case _RGB:
-                break;
-
-            default:
-                RGB_momentary_on = false;
-                break;
-	    }
-	}
-    uint8_t usb_led = host_keyboard_leds();
-    if (!RGB_momentary_on && rgb_matrix_config.enable && !MAC_mode) {
-        NumLock_Mode = usb_led & (1 << USB_LED_NUM_LOCK);
-	    if (NumLock_Mode) {
-            rgb_matrix_sethsv_noeeprom(RGB_current_config.hsv.h, RGB_current_config.hsv.s, RGB_current_config.hsv.v);
-            rgblight_mode_noeeprom(RGB_current_config.mode);
-	    } else {
-            #ifdef RGBLED_BOTH
-                rgb_matrix_layer_helper(HSV_AZURE, 1, rgb_matrix_config.speed, LED_FLAG_UNDERGLOW);
-            #else
-                rgb_matrix_layer_helper(HSV_AZURE, 1, rgb_matrix_config.speed, LED_FLAG_NONE);
-            #endif
 	        }
 	    }
-}
+    }
+
 #elif defined(RGBLIGHT_ENABLE)
     uint32_t layer_state_set_user(uint32_t state) {
 	    switch (biton32(state)) {
@@ -400,6 +346,11 @@ void rgb_matrix_indicators_user(void) {
                 rgblight_mode_noeeprom(1);
 		        RGB_momentary_on = true;
 		        break;
+
+            case _NUMOFF:
+                rgblight_sethsv_noeeprom(HSV_AZURE);
+			    rgblight_mode_noeeprom(1);
+                break;
 
             case _RGB:
 		        break;
@@ -414,9 +365,7 @@ void rgb_matrix_indicators_user(void) {
     }
 
     void led_set_user(uint8_t usb_led) {
-        MACOS_CHECK
         if (!RGB_momentary_on) {
-
 	        if (usb_led & (1 << USB_LED_NUM_LOCK)) {
                 rgblight_sethsv_noeeprom(RGB_current_config.hue, RGB_current_config.sat, RGB_current_config.val);
 			    rgblight_mode_noeeprom(RGB_current_config.mode);

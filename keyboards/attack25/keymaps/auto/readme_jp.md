@@ -1,4 +1,15 @@
-﻿# The Default Attack25 Layout
+﻿# CAUTIOIN
+```
+auto keymap has automatic MAC/WIN OS detect feature.
+Experimental phase. Still in progress.
+
+autoキーマップはmacキーマップにMAC/WINを自動的に判別する機能を追加したものです。
+すでに起動しているPCに接続することで、おおよそ判別されるはずです。
+ただし条件によってはうまく機能しないこともあります。あくまで実験的な試みとしてご理解ください。
+
+```
+
+# The Default Attack25 Layout
 ## 配列
 
 ### Default Layer

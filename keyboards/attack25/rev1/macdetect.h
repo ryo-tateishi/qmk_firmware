@@ -1,3 +1,1 @@
-bool macos_check(void);
-
-#define MACOS_CHECK if (!macos_checked) {MAC_mode = macos_check(); macos_checked = true; }
+uint8_t macos_check(void);
