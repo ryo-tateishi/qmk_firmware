@@ -1,5 +1,5 @@
 /**
- * Keymaps for Eruphone US
+ * Keymaps for Eruphone Symmetrical US
  */
 #include QMK_KEYBOARD_H
 #include "keymap_jp.h"
